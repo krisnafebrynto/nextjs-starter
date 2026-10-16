@@ -1,27 +1,69 @@
 {
   "name": "nextjs-starter",
-  "version": "0.1.0",
+  "description": "A bun only Next.js starter template.",
+  "license": "MIT",
+  "version": "0.1.1",
+  "type": "module",
+  "readme": "README.md",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
+    "build": "bun --bun next build",
+    "check:build": "bun check -p tsconfig.build.json",
+    "clean": "bun ./scripts/clean.ts .next next-env.d.ts",
+    "dev": "bun --bun next dev",
+    "start": "bun --bun next start",
+    "typecheck": "bun typegen && bun check:build",
+    "typegen": "bun --bun next typegen"
   },
   "dependencies": {
-    "next": "16.4.2",
-    "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "next": "^16.4.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   },
   "devDependencies": {
-    "@tailwindcss/turbopack": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "babel-plugin-react-compiler": "1.0.0",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "@tailwindcss/turbopack": "^4.3.3",
+    "@types/bun": "^1.4.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2"
+  },
+  "engines": {
+    "bun": ">=1.4.3",
+    "runtime": {
+      "name": "bun",
+      "version": ">=1.4.3",
+      "onFail": "error"
+    }
   },
   "packageManager": "bun@1.4.3",
+  "devEngines": {
+    "os": [
+      {
+        "name": "linux",
+        "onFail": "error"
+      },
+      {
+        "name": "win32",
+        "onFail": "error"
+      },
+      {
+        "name": "darwin",
+        "onFail": "error"
+      }
+    ],
+    "packageManager": {
+      "name": "bun",
+      "version": ">=1.4.3",
+      "onFail": "error"
+    },
+    "runtime": {
+      "name": "bun",
+      "onFail": "error",
+      "version": ">=1.4.3"
+    }
+  },
   "ignoreScripts": [
     "sharp",
     "unrs-resolver"
