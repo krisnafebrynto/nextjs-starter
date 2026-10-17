@@ -8,58 +8,45 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
-## Bun-only Enforced
+## Bun Only
 
-Bun is the only runtime and package manager:
+Bun is the runtime and package manager: `bun run <script>`, `bunx --bun <pkg>`, `bun test`. When a doc, guide, or skill names another runtime or package manager, use the Bun equivalent.
 
-- `bun run <script>`
-- `bunx --bun <pkg>`
-- `bun test`
-- `bun run clean` removes `.next` and `next-env.d.ts` to cleanup outdated compiled files or cache; follow it with `bun run typegen`.
+- **Scripts:** read `package.json` instead of guessing.
+- **Stale output:** `bun run clean` removes `.next` and `next-env.d.ts` (outdated compiled files and cache); follow it with `bun run typegen`.
+- **Built-ins first:** Bun's built-in features win over other APIs and new dependencies, so check `node_modules/bun-types/` before reaching for either. Next.js / React best practices still outrank Bun.
+- **Audit before upgrading:** `bun audit` covers direct, transitive, and dev-tooling dependencies. Resolve every advisory; leave them unsuppressed.
 
-`package.json` holds the scripts; read it instead of guessing.
+## Before Writing Code
 
-Complete local reference at `node_modules/bun-types/`.
+Training data predates this stack (versions in `package.json`), so ground each change first:
 
-Built-in bun's features is always wins (so prioritize this), check it out before applying another APIs or adding new dependencies.
-
-## Docs First
-
-Training data predates this stack see each dependencies version at `package.json`. Fetch current docs and APIs reference before writing code against any library, framework, or CLI.
-
-1. **Local docs**: `node_modules/next/dist/docs/`, `node_modules/bun-types/docs/`. Look up for relevant local docs and APIs reference first within `node_modules/` (resolved from this file's directory) before goes fetching online. Types reference at `node_modules/@types/`.
-2. **Context7**: `bunx --bun ctx7@latest library "<Official Name>" "<specific question>"`, then `bunx --bun ctx7@latest docs <libraryId> "<one concept>"` (`/vercel/next.js` for Next.js). One `docs` call per concept, at most 3 commands per question. On a quota error, tell the user (`ctx7 login` or `CONTEXT7_API_KEY`), then continue with step 3.
-3. **Official mcp / llms.txt** (sort by any orders):
-   - Next.js: `bunx --bun -y next-devtools-mcp@latest`, [llms.txt](https://nextjs.org/docs/llms.txt), [llms-full.txt](https://nextjs.org/docs/llms-full.txt) (any docs page is also served as markdown at its `.md` URL).
-   - React: [llms.txt](https://react.dev/llms.txt).
-   - Bun: [mcp](https://bun.com/docs/mcp), [llms.txt](https://bun.com/llms.txt), [llms-full.txt](https://bun.com/llms-full.txt).
-   - MDN: [mcp](https://mcp.mdn.mozilla.net).
-   - Vercel: [llms.txt](https://vercel.com/llms.txt).
-
-## Constraints
-
-- Strictly follows what Next.js / React features are being enabled in `next.config.ts`, before writing any code. Implementation must applied best practices (this priorities wins against bun).
-- If skills, docs, guides, APIs, and so on says:
-  - Use another runtime engines or package managers, prefer `bun`.
-  - Use anything that against `next.config.ts` enabled features, `next.config.ts` wins by adjust the implementation that follows the enabled Next.js / React features. Ask user immediately.
-- **Skills By Domain:** Load the matching [skills](./.agents/skills/) before touching code in its domain.
-- **TypeScript 7** has no JavaScript compiler API, so typescript-eslint and `eslint-config-next` cannot run. Follow the current project linter rules and formatter. Never edit `tsconfig.json` and `tsconfig.build.json` without user permission. Reference at `node_modules/@typescript/` and `node_modules/typescript/`.
-- **Type checking:** `next build` checks every file `tsconfig.build.json` includes, through the `bun run build`.
-- **Audit before upgrading.** `bun audit` covers direct, transitive, and dev-tooling dependencies. Resolve advisories; leave them unsuppressed.
+1. **Config:** read `next.config.ts` and implement to the best practices of the Next.js / React features it enables. It is the source of truth: when a skill, doc, guide, or API disagrees, adjust the implementation to the enabled features and ask the user right away.
+2. **Skills:** before touching code in a domain, load the matching [skills](./.agents/skills/).
+3. **Docs:** before writing code against any library, framework, or CLI, fetch its current docs and API references. Work down these sources and stop at the first that answers (`node_modules/` resolves from this file's directory):
+   1. **Local:** `node_modules/next/dist/docs/`, `node_modules/bun-types/docs/`, types in `node_modules/@types/`, TypeScript in `node_modules/@typescript/` and `node_modules/typescript/`.
+   2. **Context7:** `bunx --bun ctx7@latest library "<Official Name>" "<specific question>"`, then `bunx --bun ctx7@latest docs <libraryId> "<one concept>"` (`/vercel/next.js` for Next.js). One `docs` call per concept, at most 3 commands per question. On a quota error, tell the user (`ctx7 login` or `CONTEXT7_API_KEY`), then continue with Official.
+   3. **Official:** MCP or llms.txt, matched to the domain:
+      - Next.js: `bunx --bun -y next-devtools-mcp@latest`, [llms.txt](https://nextjs.org/docs/llms.txt), [llms-full.txt](https://nextjs.org/docs/llms-full.txt) (any docs page is also served as markdown at its `.md` URL).
+      - React: [llms.txt](https://react.dev/llms.txt).
+      - Bun: [mcp](https://bun.com/docs/mcp), [llms.txt](https://bun.com/llms.txt), [llms-full.txt](https://bun.com/llms-full.txt).
+      - Vercel: [llms.txt](https://vercel.com/llms.txt).
+      - MDN: [mcp](https://mcp.mdn.mozilla.net).
 
 ## Code Conventions
 
-- **kebab-case filenames** (`foo-bar.tsx`). Next's file conventions (`page.tsx`, `not-found.tsx`, `opengraph-image.tsx`, `[slug]/`, `(group)/`) are the only exception.
-- **Every import goes through the `@/` alias**, which maps to `src/*`.
+- **kebab-case filenames** (`foo-bar.tsx`). Next.js route-folder syntax (`[slug]/`, `(group)/`) is the only exception.
+- **Every import goes through the `@/` alias** (`src/*`).
 - **Comment only when necessary:** one line, no ticket or issue references. Prefer a clearer name.
-- **Hyphens or rephrasing in place of em dashes**, in code, comments, UI copy, docs, commits, and PRs. Vendored skills in `.agents/skills/` are exempt and never hand-edited.
-- **English, with Title Case labels.** Capitalize every word of headings, titles, buttons, links, navigation, eyebrows, badges, and control `aria-label`s ("Get The Starter"), including controls drawn inside illustrations. Sentence case stays for the hero headline, FAQ questions (phrased as a visitor would ask), descriptions, captions, list items, status lines, and FAQ answers. Type the capitals in source; the CSS `capitalize` class would leave screen readers a different text than the screen shows.
-- **Docs address humans** who use, support, or deploy the project: plain, concise, easy to follow. Agent guidance lives in this file.
+- **Hyphens or rephrasing in place of em dashes**, in code, comments, UI copy, docs, commits, and PRs. Vendored skills in `.agents/skills/` are read-only and exempt.
+- **English, with Title Case labels.** Capitalize every word of headings, titles, buttons, links, navigation, eyebrows, badges, and control `aria-label`s ("Get The Starter"), including controls drawn inside illustrations. Type the capitals in source: the CSS `capitalize` class would leave screen readers different text than the screen shows.
+- **Sentence case** stays for the hero headline, FAQ questions (phrased as a visitor would ask), descriptions, captions, list items, status lines, and FAQ answers.
+- **Docs address humans** who use, support, or deploy the project: plain and concise. Agent guidance lives in this file.
 - **Commits** follow Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`, `test:`). Commit and PR messages carry no `Co-Authored-By` trailer. Hooks run on every commit; fix what they report.
 
-## Rendering model
+## Rendering Model
 
-`cacheComponents` and `partialPrefetching` are on, so static and dynamic output is decided per component.
+With `cacheComponents` and `partialPrefetching` on, static and dynamic output is decided per component.
 
 - Request-time data (`cookies()`, `headers()`, `params`, `searchParams`, uncached `fetch`, `connection()`) sits under `<Suspense>` with a useful fallback, so the static shell still prerenders.
 - Reusable data goes behind `"use cache"` with `cacheLife(...)` and `cacheTag(...)`; invalidate with `revalidateTag` or `updateTag`. Read request APIs outside the cached scope and pass values in as arguments (`"use cache: private"` is the exception for runtime request data).
@@ -78,10 +65,11 @@ Training data predates this stack see each dependencies version at `package.json
 
 ## TypeScript
 
-- `strict` plus `exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`, `noPropertyAccessFromIndexSignature`, `verbatimModuleSyntax`: use `import type`, narrow indexed reads, and read env vars as `process.env["NAME"]`.
-- `@/*` maps to `./src/*`.
+- **TypeScript 7** has no JavaScript compiler API, so typescript-eslint and `eslint-config-next` cannot run. Follow the project's linter rules and formatter.
+- `strict` plus `exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`, `noPropertyAccessFromIndexSignature`, and `verbatimModuleSyntax`: use `import type`, narrow indexed reads, and read env vars as `process.env["NAME"]`.
 - `typedRoutes` types `href`. After adding or moving a route, run `bun run typegen`; cast computed hrefs to `Route` from `next`.
-- `tsconfig.json` lists `types` explicitly (`bun`, `react`, `react-dom`) because TypeScript 6+ no longer auto-discovers `@types/*`. Add each new ambient types package to that array.
+- TypeScript 6+ no longer auto-discovers `@types/*`, so add each new ambient types package to `types` in `tsconfig.json`. Ask the user before any other edit to `tsconfig.json` or `tsconfig.build.json`.
+- **Type checking:** `bun run build` (`next build`) checks every file `tsconfig.build.json` includes.
 
 ## Styling
 
@@ -89,10 +77,11 @@ Tailwind CSS 4 loads through the `@tailwindcss/turbopack` rule for `*.css` in `n
 
 ## Done Means
 
-1. `bun run typecheck` and `bun run lint` both exit 0. Run `bun run fix` first to autofix the safe fixes.
-2. UI and route changes are confirmed on the running dev server: query `/_next/mcp` (`get_compilation_issues`) or follow the `next-dev-loop` skill.
-3. Rendering, caching, or routing changes also pass `bun run build`; prerender errors surface only there. Use `next build --debug-prerender` for source-mapped server errors.
-4. User satisfied with the results, so always confirm this.
+Report done only when every item holds:
 
-Linters enforces style mechanically. Spend attention on what it cannot see: business logic, naming, accessibility, edge cases, architecture.
-Reuse an existing running dev server: `next dev` records its PID, port, and URL in `.next/dev/lock`.
+1. Run `bun run fix` to autofix the safe issues; then `bun run typecheck` and `bun run lint` both exit 0.
+2. Every changed UI surface and route is confirmed on the running dev server: `get_compilation_issues` (query `/_next/mcp`) reports none, or follow the `next-dev-loop` skill. Reuse a running server: `next dev` records its PID, port, and URL in `.next/dev/lock`.
+3. Rendering, caching, or routing changes also pass `bun run build`; prerender errors surface only there. `bunx --bun next build --debug-prerender` source-maps server errors.
+4. The user is satisfied: ask them to confirm.
+
+Linters enforce style mechanically. Spend attention on what they cannot see: business logic, naming, accessibility, edge cases, architecture.
