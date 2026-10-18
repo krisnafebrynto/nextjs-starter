@@ -20,8 +20,8 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   experimental: {
     agentFeedback: true,
-    turbopackGc: false,
-    turbopackRustReactCompiler: false, // NOTE: If enabled, you do not require `babel-plugin-react-compiler` in your `package.json` as `devDependencies`.
+    turbopackGc: true,
+    turbopackRustReactCompiler: true, // NOTE: If enabled, you do not require `babel-plugin-react-compiler` in your `package.json` as `devDependencies`.
   },
   logging: {
     browserToTerminal: "warn",
