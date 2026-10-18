@@ -123,10 +123,16 @@ async function expandArg(arg: string): Promise<ExpansionResult> {
 
   const paths = new Map<string, string>();
 
-  for (const match of matches) {
-    const matchedAbsolute = resolveInsideCwd(match);
-    await assertRealParentInsideCwd(matchedAbsolute);
-    paths.set(matchedAbsolute, normalizeSlashes(match));
+  const validatedMatches = await Promise.all(
+    matches.map(async (match) => {
+      const matchedAbsolute = resolveInsideCwd(match);
+      await assertRealParentInsideCwd(matchedAbsolute);
+      return [matchedAbsolute, normalizeSlashes(match)] as const;
+    })
+  );
+
+  for (const [matchedAbsolute, displayPath] of validatedMatches) {
+    paths.set(matchedAbsolute, displayPath);
   }
 
   return { arg, kind: "matched", paths };
