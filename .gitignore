@@ -4,9 +4,6 @@
 *.bak
 *.zip
 *.tar*
-/example-design
-/.agents/
-skills-lock.json
 
 # dependencies
 /node_modules

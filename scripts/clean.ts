@@ -1,5 +1,5 @@
-import { lstat, rm, unlink } from "node:fs/promises";
-import { isAbsolute, relative, resolve, sep } from "node:path";
+import { lstat, realpath, rm, unlink } from "node:fs/promises";
+import { dirname, isAbsolute, relative, resolve, sep } from "node:path";
 
 const cwd = process.cwd();
 const isWindows = process.platform === "win32";
@@ -16,6 +16,14 @@ const FIRST_WILDCARD = /[*?[]/;
 const SEGMENT_BOUNDARY = ["/", "\\", "{", ","];
 // `next dev` records its pid, port, and URL in one of these.
 const LOCK_CANDIDATES = ["dev/lock", "lock"];
+const DEFAULT_DIST_DIR = ".next";
+const NEXT_ENV_TYPES = "next-env.d.ts";
+const DIST_DIR_MARKER = `${sep}.next`;
+
+// `next start` serves distDir/static under this prefix.
+const NEXT_ASSET_PREFIX = "_next";
+const DEFAULT_SERVER_PORT = 3000;
+const SERVER_PROBE_TIMEOUT_MS = 1500;
 
 type ExpansionResult =
   | { arg: string; kind: "failed"; message: string }
@@ -70,10 +78,20 @@ async function pathExists(absolute: string): Promise<boolean> {
   }
 }
 
+async function assertRealParentInsideCwd(absolute: string) {
+  const parent = await realpath(dirname(absolute));
+  const rel = relative(cwd, parent);
+
+  if (rel === ".." || rel.startsWith(`..${sep}`) || isAbsolute(rel)) {
+    throw new Error("Refusing to delete a path through a parent outside the project");
+  }
+}
+
 async function expandArg(arg: string): Promise<ExpansionResult> {
   const absolute = resolveInsideCwd(arg);
 
   if (await pathExists(absolute)) {
+    await assertRealParentInsideCwd(absolute);
     return {
       arg,
       kind: "matched",
@@ -161,6 +179,38 @@ async function describeLock(lockPath: string): Promise<string | undefined> {
   }
 }
 
+// The `.next` directory that owns a path, for targets at or under it.
+function distDirOf(absolute: string): string | undefined {
+  if (absolute.endsWith(DIST_DIR_MARKER)) {
+    return absolute;
+  }
+
+  const index = absolute.indexOf(`${DIST_DIR_MARKER}${sep}`);
+
+  return index === -1 ? undefined : absolute.slice(0, index + DIST_DIR_MARKER.length);
+}
+
+// Output a running dev server owns, so it must survive a clean.
+function isServerOutput(absolute: string): boolean {
+  return distDirOf(absolute) !== undefined || relative(cwd, absolute) === NEXT_ENV_TYPES;
+}
+
+function findDistDirs(targets: Map<string, string>): string[] {
+  const distDirs = new Set<string>();
+
+  for (const absolute of targets.keys()) {
+    const distDir = distDirOf(absolute);
+
+    if (distDir !== undefined) {
+      distDirs.add(distDir);
+    } else if (relative(cwd, absolute) === NEXT_ENV_TYPES) {
+      distDirs.add(resolve(cwd, DEFAULT_DIST_DIR));
+    }
+  }
+
+  return [...distDirs];
+}
+
 async function describeDevServer(distDir: string): Promise<string | undefined> {
   const locks = await Promise.all(
     LOCK_CANDIDATES.map((candidate) => describeLock(resolve(distDir, candidate)))
@@ -169,21 +219,79 @@ async function describeDevServer(distDir: string): Promise<string | undefined> {
   return locks.find((lock) => lock !== undefined);
 }
 
-async function warnAboutRunningDevServer(targets: Map<string, string>): Promise<void> {
-  const distDirs = [...targets.keys()].filter((absolute) => absolute.endsWith(`${sep}.next`));
+async function findStaticAsset(distDir: string): Promise<string | undefined> {
+  if (!(await pathExists(resolve(distDir, "static")))) {
+    return undefined;
+  }
+
+  const assets = await Array.fromAsync(
+    new Bun.Glob("static/**/*").scan({ cwd: distDir, onlyFiles: true })
+  );
+
+  return assets[0];
+}
+
+// `next start` keeps no lockfile, so prove that the served asset is this build.
+async function findServingServer(distDir: string): Promise<string | undefined> {
+  const asset = await findStaticAsset(distDir);
+
+  if (asset === undefined) {
+    return undefined;
+  }
+
+  const port = Number.parseInt(process.env["PORT"] ?? "", 10) || DEFAULT_SERVER_PORT;
+  const origin = `http://127.0.0.1:${port}`;
+
+  try {
+    const response = await fetch(`${origin}/${NEXT_ASSET_PREFIX}/${asset}`, {
+      signal: AbortSignal.timeout(SERVER_PROBE_TIMEOUT_MS),
+    });
+
+    if (!response.ok) {
+      return undefined;
+    }
+
+    const served = await response.arrayBuffer();
+    const { size } = Bun.file(resolve(distDir, asset));
+
+    return served.byteLength === size ? origin : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+async function describeRunningServer(distDir: string): Promise<string | undefined> {
+  const devServer = await describeDevServer(distDir);
+
+  if (devServer !== undefined) {
+    return `A dev server is running (${devServer}). Stop \`bun run dev\` to clean its output.`;
+  }
+
+  const servingServer = await findServingServer(distDir);
+
+  return servingServer === undefined
+    ? undefined
+    : `A production server is responding on ${servingServer}. Stop \`bun run start\` to clean its output.`;
+}
+
+// Returns true when a live server owns any of the targets.
+async function warnAboutRunningServer(targets: Map<string, string>): Promise<boolean> {
+  const distDirs = findDistDirs(targets);
 
   if (distDirs.length === 0) {
-    return;
+    return false;
   }
 
-  const descriptions = await Promise.all(distDirs.map((distDir) => describeDevServer(distDir)));
-  const description = descriptions.find((value) => value !== undefined);
+  const messages = await Promise.all(distDirs.map((distDir) => describeRunningServer(distDir)));
+  const message = messages.find((value) => value !== undefined);
 
-  if (description !== undefined) {
-    console.warn(
-      `A dev server is running (${description}). Stop \`bun run dev\` before cleaning .next.`
-    );
+  if (message === undefined) {
+    return false;
   }
+
+  console.warn(message);
+
+  return true;
 }
 
 async function deletePath(absolute: string): Promise<void> {
@@ -256,9 +364,18 @@ async function main(): Promise<number> {
     }
   }
 
-  await warnAboutRunningDevServer(targets);
+  const serverRunning = await warnAboutRunningServer(targets);
+
+  if (serverRunning) {
+    failed = true;
+  }
 
   for (const [absolute, display] of targets) {
+    if (serverRunning && isServerOutput(absolute)) {
+      console.warn(`Skipped: ${display} (server is running)`);
+      continue;
+    }
+
     try {
       // biome-ignore lint/performance/noAwaitInLoops: deletes run sequentially so overlapping targets cannot race and output stays deterministic
       await deleteWithRetries(absolute);
