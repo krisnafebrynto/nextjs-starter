@@ -5,11 +5,11 @@ export const siteViewport: Viewport = {
   themeColor: [
     {
       color: "#FAFAFA",
-      media: "prefers-color-scheme: light",
+      media: "(prefers-color-scheme: light)",
     },
     {
       color: "#0A0A0A",
-      media: "prefers-color-scheme: dark",
+      media: "(prefers-color-scheme: dark)",
     },
   ],
   viewportFit: "cover",

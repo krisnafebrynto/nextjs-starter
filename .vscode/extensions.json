@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "biomejs.biome",
+    "bradlc.vscode-tailwindcss",
+    "TypeScriptTeam.native-preview",
+    "redhat.vscode-xml"
+  ]
+}

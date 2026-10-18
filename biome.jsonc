@@ -1,0 +1,39 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "extends": [
+    "ultracite/biome/core",
+    "ultracite/biome/react",
+    "ultracite/biome/next",
+    "ultracite/biome/vitest"
+  ],
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100,
+    "attributePosition": "multiline"
+  },
+  "linter": {
+    "rules": {
+      "complexity": {
+        "useLiteralKeys": "off"
+      },
+      "nursery": {
+        "useReactCompiler": "error"
+      }
+    },
+    "domains": {
+      "next": "recommended",
+      "react": "recommended",
+      "test": "recommended"
+    }
+  },
+  "javascript": {
+    "globals": ["Bun"]
+  }
+}

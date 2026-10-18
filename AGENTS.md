@@ -85,3 +85,4 @@ Report done only when every item holds:
 4. The user is satisfied: ask them to confirm.
 
 Linters enforce style mechanically. Spend attention on what they cannot see: business logic, naming, accessibility, edge cases, architecture.
+
