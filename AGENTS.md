@@ -86,3 +86,17 @@ Report done only when every item holds:
 
 Linters enforce style mechanically. Spend attention on what they cannot see: business logic, naming, accessibility, edge cases, architecture.
 
+## Agent skills
+
+### Issue tracker
+
+Issues and specs live as GitHub issues in `krisnafebrynto/nextjs-starter`, driven by the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five canonical roles keep their default names: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context layout: `GLOSSARY.md` and `docs/adr/` at the repo root, created lazily. See `docs/agents/domain.md`.
+
