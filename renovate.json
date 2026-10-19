@@ -1,0 +1,28 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "customManagers:biomeVersions",
+    "config:recommended",
+    ":semanticCommitTypeAll(chore)",
+    ":semanticCommitScopeDisabled"
+  ],
+  "schedule": ["before 6am"],
+  "minimumReleaseAge": "1 day",
+  "rangeStrategy": "bump",
+  "automergeStrategy": "squash",
+  "packageRules": [
+    {
+      "description": "Group stable minor and patch updates into one PR that merges once CI passes",
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchCurrentVersion": "!/^0/",
+      "groupName": "non-major dependencies",
+      "groupSlug": "non-major",
+      "automerge": true
+    },
+    {
+      "description": "Keep bun versions in packageManager and CI, raised by hand",
+      "matchDepNames": ["bun"],
+      "enabled": false
+    }
+  ]
+}
