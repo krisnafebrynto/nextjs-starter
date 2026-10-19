@@ -44,8 +44,8 @@ const nextConfig: NextConfig = {
   },
   typedRoutes: true,
   typescript: {
-    tsconfigPath: isProd ? "tsconfig.build.json" : "tsconfig.json", // NOTE: `bun check` is Bun's built-in type checker since v1.4.3, by default `tsconfig.json` includes `.next/dev/types/` which somehow **may cause compiler errors** during the production build.
     ignoreBuildErrors: false, // NOTE: Explicitly ensure this value always set to false
+    tsconfigPath: isProd ? "tsconfig.build.json" : "tsconfig.json", // NOTE: `bun check` is Bun's built-in type checker since v1.4.3, by default `tsconfig.json` includes `.next/dev/types/` which somehow **may cause compiler errors** during the production build.
   },
 };
 
