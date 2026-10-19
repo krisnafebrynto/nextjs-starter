@@ -22,7 +22,7 @@ Bun is the runtime and package manager: `bun run <script>`, `bunx --bun <pkg>`, 
 Training data predates this stack (versions in `package.json`), so ground each change first:
 
 1. **Config:** read `next.config.ts` and implement to the best practices of the Next.js / React features it enables. It is the source of truth: when a skill, doc, guide, or API disagrees, adjust the implementation to the enabled features and ask the user right away.
-2. **Skills:** before touching code in a domain, load the matching [skills](./.agents/skills/).
+2. **Skills:** before touching code in a domain, load the matching skills either from the project or global skills.
 3. **Docs:** before writing code against any library, framework, or CLI, fetch its current docs and API references. Work down these sources and stop at the first that answers (`node_modules/` resolves from this file's directory):
    1. **Local:** `node_modules/next/dist/docs/`, `node_modules/bun-types/docs/`, types in `node_modules/@types/`, TypeScript in `node_modules/@typescript/` and `node_modules/typescript/`.
    2. **Context7:** `bunx --bun ctx7@latest library "<Official Name>" "<specific question>"`, then `bunx --bun ctx7@latest docs <libraryId> "<one concept>"` (`/vercel/next.js` for Next.js). One `docs` call per concept, at most 3 commands per question. On a quota error, tell the user (`ctx7 login` or `CONTEXT7_API_KEY`), then continue with Official.
