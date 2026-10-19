@@ -7,10 +7,16 @@ function readCanonicalUrl() {
   return configuredUrl ? configuredUrl.replace(trailingSlashes, "") : fallbackCanonicalUrl;
 }
 
+const repositoryUrl = "https://github.com/krisnafebrynto/nextjs-starter";
+
 export const site = {
   canonicalUrl: readCanonicalUrl(),
+  license: {
+    name: "MIT License",
+    url: `${repositoryUrl}/blob/main/LICENSE`,
+  },
   name: "Next.js Starter",
   pitch: "A Bun-first Next.js starter for full-stack developers and small teams.",
-  repositoryUrl: "https://github.com/krisnafebrynto/nextjs-starter",
-  templateUrl: "https://github.com/krisnafebrynto/nextjs-starter/generate",
+  repositoryUrl,
+  templateUrl: `${repositoryUrl}/generate`,
 } as const;
