@@ -1,6 +1,6 @@
 {
   "name": "nextjs-starter",
-  "version": "0.1.5",
+  "version": "1.0.0",
   "private": true,
   "description": "A Bun-first Next.js starter for full-stack developers and small teams.",
   "homepage": "https://nextjs-starter-rho-wine.vercel.app",
