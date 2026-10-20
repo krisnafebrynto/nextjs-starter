@@ -9,8 +9,10 @@ export async function copyToClipboard(text: string): Promise<boolean> {
   }
 
   if (typeof document !== "undefined") {
+    const previousFocus =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const textArea = document.createElement("textarea");
     try {
-      const textArea = document.createElement("textarea");
       textArea.value = text;
       textArea.style.position = "fixed";
       textArea.style.left = "-9999px";
@@ -19,11 +21,12 @@ export async function copyToClipboard(text: string): Promise<boolean> {
       textArea.setAttribute("readonly", "");
       document.body.appendChild(textArea);
       textArea.select();
-      const successful = document.execCommand("copy");
-      document.body.removeChild(textArea);
-      return successful;
+      return document.execCommand("copy");
     } catch {
       return false;
+    } finally {
+      textArea.remove();
+      previousFocus?.focus({ preventScroll: true });
     }
   }
 

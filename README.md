@@ -287,6 +287,8 @@ export const site = {
 } as const;
 ```
 
+The snippet above keeps the Starter's identity. Replace `name`, `pitch`, and `repositoryUrl` with the App's own values before deploying.
+
 ### What Stays
 
 The Strip Step keeps the rest of the Starter:
