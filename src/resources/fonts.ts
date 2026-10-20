@@ -1,4 +1,4 @@
-import { Cinzel, Geist, JetBrains_Mono } from "next/font/google";
+import { Geist, JetBrains_Mono } from "next/font/google";
 
 export const fontHeading = Geist({
   subsets: ["latin"],
@@ -10,7 +10,7 @@ export const fontSans = Geist({
   variable: "--font-sans",
 });
 
-export const fontDisplay = Cinzel({
+export const fontDisplay = Geist({
   subsets: ["latin"],
   variable: "--font-display",
 });
