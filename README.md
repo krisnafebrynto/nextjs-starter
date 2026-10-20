@@ -118,8 +118,7 @@ Cache Components replaces route segment configs (`dynamic`, `revalidate`, `fetch
 
 Bun's test runner is the only test framework. `bunfig.toml` preloads `test/setup.ts`, which registers happy-dom, cleans up Testing Library after each test, and disables Motion animations that happy-dom cannot finish. Assertions use Bun's built-in matchers; there is no jest-dom augmentation.
 
-The suite has one seam: the root route render, inside the same `ThemeProvider` composition the root layout provides. Here is one passing example from `src/app/page.test.tsx`:
-
+The suite has one seam: the root route render, inside the same `ThemeProvider` composition the root layout provides. Here is one of its passing tests, from `src/app/page.test.tsx`:
 ```tsx
 import { describe, expect, test } from "bun:test";
 import { render, screen } from "@testing-library/react";
@@ -295,7 +294,7 @@ The Strip Step keeps the rest of the Starter:
 - `src/app/layout.tsx` and `src/app/globals.css`
 - `src/components/theme-provider.tsx` and the `src/components/ui/` primitives
 - The motion toolkit in `src/components/motion/`, including `theme-toggle.tsx`
-- `src/hooks/`, `src/lib/`, `src/resources/fonts.ts`, and `src/resources/viewport.ts`
+- `src/hooks/`, `src/lib/`, `src/resources/site.ts`, `src/resources/fonts.ts`, and `src/resources/viewport.ts`
 - The Bun test preload, test dependencies, and `test` script
 - `.github/workflows/ci.yml` and `lefthook.yml`
 
