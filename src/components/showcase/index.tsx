@@ -1,8 +1,11 @@
 import { ArrowUpRightIcon } from "lucide-react";
 import Link from "next/link";
+import { ButtonLink } from "@/components/motion/button";
 import { MotionSection } from "@/components/showcase/motion-section";
+import { QuickstartSection } from "@/components/showcase/quickstart-section";
+import { ScopeSection } from "@/components/showcase/scope-section";
+import { StackSection } from "@/components/showcase/stack-section";
 import { ThemeToggle } from "@/components/showcase/theme-toggle";
-import { buttonVariants } from "@/components/ui/button";
 import { site } from "@/resources/site";
 
 const footerLinks = [
@@ -47,26 +50,31 @@ function Showcase() {
               {site.pitch}
             </p>
             <div className="flex flex-col gap-3 pt-2 sm:flex-row">
-              <a
-                className={buttonVariants({ size: "lg" })}
+              <ButtonLink
                 href={site.templateUrl}
                 rel="noreferrer"
+                size="lg"
                 target="_blank"
+                variant="primary"
               >
                 Use This Template
                 <ArrowUpRightIcon data-icon="inline-end" />
-              </a>
-              <a
-                className={buttonVariants({ size: "lg", variant: "outline" })}
+              </ButtonLink>
+              <ButtonLink
                 href={site.repositoryUrl}
                 rel="noreferrer"
+                size="lg"
                 target="_blank"
+                variant="outline"
               >
                 View The Repository
                 <ArrowUpRightIcon data-icon="inline-end" />
-              </a>
+              </ButtonLink>
             </div>
           </MotionSection>
+          <StackSection />
+          <QuickstartSection />
+          <ScopeSection />
         </main>
         <footer className="border-border/60 border-t">
           <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-6 py-8 text-muted-foreground text-sm sm:flex-row sm:items-center sm:justify-between">
