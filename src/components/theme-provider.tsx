@@ -2,6 +2,7 @@
 
 import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes";
 import { useEffect } from "react";
+import { oppositeTheme } from "@/lib/theme";
 
 function ThemeProvider({ children, ...props }: React.ComponentProps<typeof NextThemesProvider>) {
   return (
@@ -52,7 +53,7 @@ function ThemeHotkey() {
         return;
       }
 
-      setTheme(resolvedTheme === "dark" ? "light" : "dark");
+      setTheme(oppositeTheme(resolvedTheme));
     }
 
     window.addEventListener("keydown", onKeyDown);

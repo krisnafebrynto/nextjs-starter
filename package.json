@@ -1,8 +1,13 @@
 {
   "name": "nextjs-starter",
-  "version": "0.1.5",
+  "version": "1.0.0",
   "private": true,
-  "description": "A bun only Next.js starter template.",
+  "description": "A Bun-first Next.js starter for full-stack developers and small teams.",
+  "homepage": "https://nextjs-starter-rho-wine.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/krisnafebrynto/nextjs-starter.git"
+  },
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -16,6 +21,7 @@
     "lint:ci": "bun --bun biome ci .",
     "prepare": "lefthook install",
     "start": "bun --bun next start",
+    "test": "bun test",
     "typecheck": "bun typegen && bun check:build",
     "typegen": "bun --bun next typegen"
   },
@@ -37,7 +43,10 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
+    "@happy-dom/global-registrator": "^21.0.3",
     "@tailwindcss/turbopack": "^4.3.3",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
     "@types/bun": "^1.4.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",

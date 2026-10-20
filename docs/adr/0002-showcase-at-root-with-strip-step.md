@@ -1,0 +1,3 @@
+# The Showcase Ships At The Root Route With A Documented Strip Step
+
+The deployed Template is the Starter's shop window, so the root route ships a showcase that demonstrates the stack, quickstart, and theme toggle to anyone evaluating it. Every App starts as a copy, though, so the README documents one strip step that removes the showcase module and replaces the root route with a minimal page, while the layout, providers, and site resource stay. A minimal root route with the showcase living only in README screenshots was the alternative; it was rejected because a live demo is the strongest proof that the stack works.
