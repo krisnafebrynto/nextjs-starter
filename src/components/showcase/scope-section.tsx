@@ -19,7 +19,7 @@ const included = [
   "Tailwind CSS 4 and shadcn/ui primitives",
   "Motion with reduced-motion support",
   "Biome and Ultracite for linting and formatting",
-  "GitHub Actions CI for linting, types, and builds",
+  "GitHub Actions CI for linting, types, tests, and builds",
 ] as const;
 
 const notIncluded = [

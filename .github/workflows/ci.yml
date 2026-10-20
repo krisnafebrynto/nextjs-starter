@@ -31,5 +31,7 @@ jobs:
         run: bun lint:ci
       - name: Typecheck
         run: bun typecheck
+      - name: Test
+        run: bun run test
       - name: Build
         run: NEXT_PUBLIC_BASE_URL="http://localhost:3000" bun run build
