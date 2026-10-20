@@ -29,6 +29,7 @@ const notIncluded = [
   "Internationalization",
   "Analytics",
   "Content management system",
+  "Email and transactional messages",
 ] as const;
 
 interface ScopeListProps {

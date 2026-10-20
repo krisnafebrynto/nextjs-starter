@@ -50,6 +50,22 @@ const SIZE_CLASS: Record<ButtonSize, string> = {
   sm: "h-8 px-3 text-xs gap-1.5 rounded-full",
 };
 
+function pressMotion({
+  canHover,
+  pressScale,
+  reduce,
+}: {
+  canHover: boolean;
+  pressScale: number;
+  reduce: boolean | null;
+}) {
+  // Keep gestures attached so Motion's SSR attributes stay stable.
+  return {
+    whileHover: { scale: canHover && !reduce ? 1.02 : 1 },
+    whileTap: { scale: reduce ? 1 : pressScale },
+  };
+}
+
 function RippleEffect({
   ripple,
   onComplete,
@@ -139,11 +155,10 @@ export function Button({
       ref={ref}
       transition={SPRING_PRESS}
       type="button"
-      {...(reduce || !canHover ? {} : { whileHover: { scale: 1.02 } })}
-      {...(reduce ? {} : { whileTap: { scale: pressScale } })}
+      {...pressMotion({ canHover, pressScale, reduce })}
       {...rest}
     >
-      {ripple && !reduce ? (
+      {ripple ? (
         <span className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
           <AnimatePresence>
             {ripples.map((r) => (
@@ -184,8 +199,7 @@ export function ButtonLink({
       )}
       ref={ref}
       transition={SPRING_PRESS}
-      {...(reduce || !canHover ? {} : { whileHover: { scale: 1.02 } })}
-      {...(reduce ? {} : { whileTap: { scale: pressScale } })}
+      {...pressMotion({ canHover, pressScale, reduce })}
       {...rest}
     >
       {children}
